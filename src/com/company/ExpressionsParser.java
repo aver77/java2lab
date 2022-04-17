@@ -30,14 +30,6 @@ public class ExpressionsParser {
     }
 
     /**
-     * Добавление пользовательской функции в парсер (анализатор)
-     * @param func пользовательская функция
-     */
-    public void addCustomFunction(IFunctionExpression func) {
-        customFunctions.add(func);
-    }
-
-    /**
      * Взятие переменной пользователя из хранилища (hashMap)
      * @param variableName имя переменной
      * @return значение переменной
@@ -94,6 +86,36 @@ public class ExpressionsParser {
     }
 
     /**
+     * выполнение операций умножения или деления
+     * @param s выражение строка
+     * @return результат выражения после парсинга (вычисленное значение + остальная часть выражения)
+     * @throws IllegalArgumentException если выражение не верное
+     */
+    private ExpressionsResult processMulDiv(String s) throws IllegalArgumentException {
+        ExpressionsResult current = processBracket(s);
+
+        double leftValue = current.value;
+        while (true) {
+            if (current.rest.length() == 0) {
+                return current;
+            }
+            char operation = current.rest.charAt(0);
+            if ((operation != '*' && operation != '/')) return current;
+
+            String next = current.rest.substring(1);
+            ExpressionsResult right = processBracket(next);
+
+            if (operation == '*') {
+                leftValue *= right.value;
+            } else {
+                leftValue /= right.value;
+            }
+
+            current = new ExpressionsResult(leftValue, right.rest);
+        }
+    }
+
+    /**
      * выполнение операций в скобках
      * @param s выражение строка
      * @return результат выражения после парсинга (вычисленное значение + остальная часть выражения)
@@ -136,36 +158,6 @@ public class ExpressionsParser {
             }
         }
         return toNumber(s);
-    }
-
-    /**
-     * выполнение операций умножения или деления
-     * @param s выражение строка
-     * @return результат выражения после парсинга (вычисленное значение + остальная часть выражения)
-     * @throws IllegalArgumentException если выражение не верное
-     */
-    private ExpressionsResult processMulDiv(String s) throws IllegalArgumentException {
-        ExpressionsResult current = processBracket(s);
-
-        double leftValue = current.value;
-        while (true) {
-            if (current.rest.length() == 0) {
-                return current;
-            }
-            char operation = current.rest.charAt(0);
-            if ((operation != '*' && operation != '/')) return current;
-
-            String next = current.rest.substring(1);
-            ExpressionsResult right = processBracket(next);
-
-            if (operation == '*') {
-                leftValue *= right.value;
-            } else {
-                leftValue /= right.value;
-            }
-
-            current = new ExpressionsResult(leftValue, right.rest);
-        }
     }
 
     /**

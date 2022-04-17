@@ -1,7 +1,7 @@
 package com.company;
 
 /**
- * Интерфейс для пользовательских функций для ExpressionParser
+ * Интерфейс для пользовательских функций для ExpressionParser (sqrt)
  */
 public interface IFunctionExpression {
     String getMetaname();
